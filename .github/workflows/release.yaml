@@ -9,7 +9,7 @@ concurrency:
 permissions: {}
 jobs:
   release-please:
-    if: github.repository == 'JustinBeckwith/gongio-mcp'
+    if: github.repository == 'james-crowley/gongio-mcp'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -23,33 +23,6 @@ jobs:
         id: release
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-  publish:
-    if: needs.release-please.outputs.release_created
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    needs: release-please
-    permissions:
-      contents: read
-      id-token: write
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          registry-url: 'https://registry.npmjs.org'
-      - run: corepack enable
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm run validate:mcp
-      - run: pnpm run build
-      - run: pnpm publish --provenance --access public --no-git-checks
-      - name: Install MCP Publisher
-        run: |
-          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz
-          sudo mv mcp-publisher /usr/local/bin/
-      - name: Login to MCP Registry
-        run: mcp-publisher login github-oidc
-      - name: Publish to MCP Registry
-        run: mcp-publisher publish
   publish-docker:
     if: needs.release-please.outputs.release_created
     runs-on: ubuntu-latest

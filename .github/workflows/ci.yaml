@@ -13,9 +13,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    permissions:
-      id-token: write
-      contents: read
     strategy:
       matrix:
         node: [20, 22, 24]
@@ -27,12 +24,7 @@ jobs:
       - run: corepack enable
       - run: pnpm install --frozen-lockfile
       - run: pnpm run build
-      - run: pnpm run test:coverage
-      - name: coverage
-        uses: codecov/codecov-action@v5
-        with:
-          name: actions ${{ matrix.node }}
-          use_oidc: true
+      - run: pnpm test
   lint:
     runs-on: ubuntu-latest
     timeout-minutes: 10
