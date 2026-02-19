@@ -1,5 +1,8 @@
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - publish-docker
 name: docker-publish
 jobs:
   publish-docker:
